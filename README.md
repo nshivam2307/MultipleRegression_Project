@@ -1,1 +1,62 @@
 # MultipleRegression_Project
+'Multiple Linear Regression BA project on Start-ups'
+'To Analyze the influence of different factors on the profit of Start-ups'
+'BA Project to predict the parameter which creates more impact on Profit'
+'Prepared by - Shivam Manoj Negi'
+
+# IMPORT LIBRARIES
+import pandas as pd
+import numpy as np
+
+# IMPORT AND READ THE DATASET
+mydata = pd.read_csv('50_Startups.csv')
+mydata.head()
+mydata.tail()
+mydata.shape
+
+# From the dataset -
+# Profit - DEPENDENT VARIABLE(y), REST ARE INDEPENDENT(x1,x2,etc.)
+# Since the startups belong to different states, statewise analysis is to be done
+# So we create dummies using one hot encoding
+
+# ONE HOT ENCODING
+dummy = pd.get_dummies(mydata['State'],drop_first=True)
+dummy.head()
+# drop_first=True - drops California because 0&0 at Florida&NewYork=California
+
+# CONCATENATE(JOIN) MYDATA AND DUMMY & store in mydata again
+# DROP state column(its not reqd now)
+mydata = pd.concat([mydata,dummy],axis=1)
+mydata.drop(['State'],axis=1, inplace=True)
+mydata.head()
+
+# Separate INDEPENDENT and DEPENDENT Columns/variables
+X = mydata.drop(['Profit'],axis=1)
+X.head()
+
+y = mydata[['Profit']]
+y.head()
+# DoubleBracket gives/creates Dataframe(single[]-gives Series)
+# OR use iloc
+# y = mydata.iloc[:,3].values
+
+# Split the dataset into testing and training
+from sklearn.model_selection import train_test_split
+X_train,X_test,y_train,y_test = train_test_split(X,y, test_size=0.2, random_state=0)
+
+# PERFORM MULTIPLE REGRESSION
+from sklearn.linear_model import LinearRegression
+
+# Train or fit the model
+regressor = LinearRegression()
+regressor.fit(X_train, y_train)
+
+# PREDICT y (using the testing dataset)
+y_pred = regressor.predict(X_test)
+
+# Check the MODEL_ACCURACY (using r2_score)
+from sklearn.metrics import r2_score
+r2_score(y_test,y_pred)
+
+# r2_score is 0.9347 - This indicates that the model is a GOOD model
+# The model is 93.47% accurate on test_dataset
